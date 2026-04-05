@@ -1,0 +1,20 @@
+{
+  "id": "carbonfox",
+  "label": "Carbonfox",
+  "colors": {
+    "background": "#0d0f14",
+    "panel": "#11151c",
+    "panelMuted": "#151a22",
+    "surface": "#1a202b",
+    "surfaceActive": "#243042",
+    "border": "#36445c",
+    "text": "#f2f4f8",
+    "textMuted": "#9aa4b2",
+    "primary": "#78a9ff",
+    "accent": "#be95ff",
+    "success": "#42be65",
+    "warning": "#f1c21b",
+    "error": "#ff8389",
+    "overlay": "#a2a9b0"
+  }
+}

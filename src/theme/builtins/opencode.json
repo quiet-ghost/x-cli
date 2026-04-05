@@ -1,0 +1,20 @@
+{
+  "id": "opencode",
+  "label": "OpenCode",
+  "colors": {
+    "background": "#0b0f17",
+    "panel": "#121826",
+    "panelMuted": "#101521",
+    "surface": "#182132",
+    "surfaceActive": "#20304c",
+    "border": "#294061",
+    "text": "#edf2ff",
+    "textMuted": "#94a3c4",
+    "primary": "#6ea8fe",
+    "accent": "#8b9cff",
+    "success": "#4ade80",
+    "warning": "#fbbf24",
+    "error": "#f87171",
+    "overlay": "#7c8aaa"
+  }
+}
