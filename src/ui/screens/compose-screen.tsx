@@ -4,7 +4,6 @@ import { createEffect, onMount, Show } from "solid-js"
 import type { Attachment } from "../../domain/attachment"
 import { useTheme } from "../../theme/context"
 import { AttachmentList } from "../components/attachment-list"
-import { StatusBar } from "../components/status-bar"
 
 export function ComposeScreen(props: {
   content: string
@@ -35,6 +34,7 @@ export function ComposeScreen(props: {
   const contentWidth = () => Math.max(1, Math.min(104, dimensions().width - containerPadding() * 2))
   const composerMinHeight = () => (dimensions().height < 22 ? 6 : 8)
   const composerMaxHeight = () => Math.max(composerMinHeight(), Math.min(14, dimensions().height - 10))
+  const versionLabel = () => (props.appVersion === "dev" ? "dev" : `v${props.appVersion}`)
 
   onMount(() => {
     setTimeout(() => {
@@ -114,7 +114,10 @@ export function ComposeScreen(props: {
       </box>
       <box flexGrow={1} />
       <box width="100%" paddingLeft={containerPadding()} paddingRight={containerPadding()} paddingBottom={1}>
-        <StatusBar accountName={props.accountName} username={props.username} version={props.appVersion} connected={props.connected} />
+        <box width="100%" flexDirection="row" justifyContent="space-between">
+          <text fg={theme().textMuted}>{props.accountName}</text>
+          <text fg={theme().textMuted}>{versionLabel()}</text>
+        </box>
       </box>
     </box>
   )
