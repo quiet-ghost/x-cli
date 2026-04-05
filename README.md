@@ -2,6 +2,13 @@
 
 Post to X from the terminal with Bun, OpenTUI, and Solid.
 
+## Install
+
+```bash
+bun install -g @quietghost/x-cli
+x-cli
+```
+
 ## Current scope
 
 - text posts
@@ -40,6 +47,35 @@ bun run dev
 bun run typecheck
 bun test
 ```
+
+## Release build
+
+```bash
+bun run build:single
+bun run build:release
+```
+
+## Publish
+
+The repository includes `.github/workflows/publish.yml`.
+
+Before using it, add this GitHub Actions secret:
+
+- `NPM_TOKEN`
+
+Then run the workflow manually with a version like `0.1.0`.
+
+You can either:
+
+- provide an explicit `version`
+- or provide a `bump` of `patch`, `minor`, or `major`
+
+It will:
+
+- build compiled platform packages
+- publish platform packages to npm
+- publish the wrapper package `@quietghost/x-cli`
+- create or update the GitHub release and upload binary archives
 
 ## Custom themes
 

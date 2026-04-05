@@ -1,4 +1,4 @@
-import { parseTweet } from "twitter-text"
+import twitterText from "twitter-text"
 
 export type CharacterCount = {
   weightedLength: number
@@ -8,7 +8,7 @@ export type CharacterCount = {
 }
 
 export function countPostCharacters(text: string): CharacterCount {
-  const result = parseTweet(text.normalize("NFC"))
+  const result = twitterText.parseTweet(text.normalize("NFC"))
   const maxLength = 280
   return {
     weightedLength: result.weightedLength,

@@ -1,7 +1,7 @@
 import { createContext, createSignal, onMount, useContext, type Accessor, type ParentProps } from "solid-js"
 import type { AppTheme } from "../domain/theme"
 import { ConfigStore } from "../lib/config"
-import { builtinThemes, loadThemes } from "./load"
+import { loadThemes } from "./load"
 
 type ThemeContextValue = {
   current: Accessor<AppTheme>
@@ -14,12 +14,8 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue>()
 
 export function ThemeProvider(props: ParentProps<{ configStore: ConfigStore }>) {
-  const initialThemes = builtinThemes()
-  const initialCurrent =
-    initialThemes.find((item) => item.id === props.configStore.value.ui.theme) ?? initialThemes[0] ?? fallbackTheme()
-
-  const [themes, setThemes] = createSignal<AppTheme[]>(initialThemes)
-  const [current, setCurrent] = createSignal<AppTheme>(initialCurrent)
+  const [themes, setThemes] = createSignal<AppTheme[]>([])
+  const [current, setCurrent] = createSignal<AppTheme>(fallbackTheme())
   const [ready, setReady] = createSignal(false)
 
   const reload = async () => {

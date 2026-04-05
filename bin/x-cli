@@ -1,0 +1,63 @@
+#!/usr/bin/env node
+
+const childProcess = require("child_process")
+const os = require("os")
+const path = require("path")
+const { createRequire } = require("module")
+
+const requireFromHere = createRequire(__filename)
+
+function detect() {
+  const platformMap = {
+    darwin: "darwin",
+    linux: "linux",
+    win32: "windows",
+  }
+  const archMap = {
+    x64: "x64",
+    arm64: "arm64",
+  }
+
+  return {
+    platform: platformMap[os.platform()] || os.platform(),
+    arch: archMap[os.arch()] || os.arch(),
+  }
+}
+
+function resolveBinary() {
+  const envPath = process.env.XCLI_BIN_PATH
+  if (envPath) return envPath
+
+  const { platform, arch } = detect()
+  const packageName = `@quietghost/x-cli-${platform}-${arch}`
+  const packageJsonPath = requireFromHere.resolve(`${packageName}/package.json`)
+  const packageDir = path.dirname(packageJsonPath)
+  const binaryName = platform === "windows" ? "x-cli.exe" : "x-cli"
+  return path.join(packageDir, "bin", binaryName)
+}
+
+function main() {
+  let target
+  try {
+    target = resolveBinary()
+  } catch (error) {
+    const { platform, arch } = detect()
+    console.error(`Could not find the installed x-cli binary for ${platform}/${arch}.`)
+    console.error(`Try reinstalling: bun install -g @quietghost/x-cli`)
+    console.error(error instanceof Error ? error.message : String(error))
+    process.exit(1)
+  }
+
+  const result = childProcess.spawnSync(target, process.argv.slice(2), {
+    stdio: "inherit",
+  })
+
+  if (result.error) {
+    console.error(result.error.message)
+    process.exit(1)
+  }
+
+  process.exit(typeof result.status === "number" ? result.status : 0)
+}
+
+main()
