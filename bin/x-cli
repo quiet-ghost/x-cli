@@ -43,6 +43,8 @@ function resolveBinary() {
 }
 
 function main() {
+  startBackgroundUpdate()
+
   let target
   try {
     target = resolveBinary()
@@ -64,6 +66,21 @@ function main() {
   }
 
   process.exit(typeof result.status === "number" ? result.status : 0)
+}
+
+function startBackgroundUpdate() {
+  if (process.env.XCLI_DISABLE_AUTOUPDATE === "1") return
+
+  const updateScript = path.join(scriptDir, "..", "update.mjs")
+  if (!fs.existsSync(updateScript)) return
+
+  const child = childProcess.spawn(process.execPath, [updateScript], {
+    detached: true,
+    stdio: "ignore",
+    windowsHide: true,
+  })
+
+  child.unref()
 }
 
 main()

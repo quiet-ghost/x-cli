@@ -1,4 +1,4 @@
-import { useKeyboard } from "@opentui/solid"
+import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
 import { createSignal, For, onCleanup } from "solid-js"
 import { useTheme } from "../../theme/context"
 import { ModalFrame } from "./modal-frame"
@@ -16,9 +16,11 @@ export function MenuModal(props: {
   onMove?: (index: number) => void
   onClose?: () => void
 }) {
+  const dimensions = useTerminalDimensions()
   const { current } = useTheme()
   const theme = () => current().colors
   const [selected, setSelected] = createSignal(0)
+  const listHeight = () => Math.max(4, Math.floor(dimensions().height / 2) - 4)
 
   const move = (next: number) => {
     if (props.items.length === 0) return
@@ -48,33 +50,35 @@ export function MenuModal(props: {
 
   return (
     <ModalFrame title={props.title} subtitle={props.subtitle}>
-      <box gap={1}>
-        <For each={props.items}>
-          {(item, index) => (
-            <box
-              paddingLeft={1}
-              paddingRight={1}
-              paddingTop={1}
-              paddingBottom={1}
-              backgroundColor={index() === selected() ? theme().surfaceActive : theme().surface}
-              border
-              borderColor={index() === selected() ? theme().primary : theme().border}
-              onMouseUp={() => {
-                setSelected(index())
-                props.onMove?.(index())
-                void item.onSelect?.()
-              }}
-            >
-              <text fg={index() === selected() ? theme().text : theme().textMuted}>{item.title}</text>
-              {item.description ? (
-                <text fg={theme().textMuted} wrapMode="word">
-                  {item.description}
-                </text>
-              ) : undefined}
-            </box>
-          )}
-        </For>
-      </box>
+      <scrollbox scrollY maxHeight={listHeight()}>
+        <box gap={1}>
+          <For each={props.items}>
+            {(item, index) => (
+              <box
+                paddingLeft={1}
+                paddingRight={1}
+                paddingTop={1}
+                paddingBottom={1}
+                backgroundColor={index() === selected() ? theme().surfaceActive : theme().surface}
+                border
+                borderColor={index() === selected() ? theme().primary : theme().border}
+                onMouseUp={() => {
+                  setSelected(index())
+                  props.onMove?.(index())
+                  void item.onSelect?.()
+                }}
+              >
+                <text fg={index() === selected() ? theme().text : theme().textMuted}>{item.title}</text>
+                {item.description ? (
+                  <text fg={theme().textMuted} wrapMode="word">
+                    {item.description}
+                  </text>
+                ) : undefined}
+              </box>
+            )}
+          </For>
+        </box>
+      </scrollbox>
     </ModalFrame>
   )
 }

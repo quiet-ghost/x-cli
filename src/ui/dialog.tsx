@@ -57,6 +57,9 @@ function DialogLayer(props: ParentProps<{ size: "medium" | "large" }>) {
   const dialog = useDialog()
 
   const width = () => (props.size === "large" ? 88 : 62)
+  const maxWidth = () => Math.max(28, dimensions().width - 4)
+  const maxHeight = () => Math.max(8, dimensions().height - 3)
+  const topPadding = () => Math.max(1, Math.floor(dimensions().height / 4))
 
   return (
     <box
@@ -67,12 +70,15 @@ function DialogLayer(props: ParentProps<{ size: "medium" | "large" }>) {
       top={0}
       zIndex={3000}
       alignItems="center"
-      paddingTop={Math.max(1, Math.floor(dimensions().height / 5))}
+      paddingTop={topPadding()}
+      paddingBottom={1}
       backgroundColor={RGBA.fromInts(0, 0, 0, 145)}
       onMouseUp={() => dialog.clear()}
     >
       <box
         width={Math.min(width(), dimensions().width - 4)}
+        maxWidth={maxWidth()}
+        maxHeight={maxHeight()}
         backgroundColor={theme().panel}
         onMouseUp={(event) => event.stopPropagation()}
       >

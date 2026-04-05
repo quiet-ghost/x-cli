@@ -21,19 +21,19 @@ import { ComposeScreen } from "./ui/screens/compose-screen"
 import { ThemeModal } from "./ui/modals/theme-modal"
 import { ToastProvider, useToast } from "./ui/toast"
 
-export function Root(props: { configStore: ConfigStore }) {
+export function Root(props: { configStore: ConfigStore; appVersion: string }) {
   return (
     <ThemeProvider configStore={props.configStore}>
       <ToastProvider>
         <DialogProvider>
-          <App configStore={props.configStore} />
+          <App configStore={props.configStore} appVersion={props.appVersion} />
         </DialogProvider>
       </ToastProvider>
     </ThemeProvider>
   )
 }
 
-function App(props: { configStore: ConfigStore }) {
+function App(props: { configStore: ConfigStore; appVersion: string }) {
   const renderer = useRenderer()
   const dialog = useDialog()
   const toast = useToast()
@@ -478,7 +478,9 @@ function App(props: { configStore: ConfigStore }) {
       attachments={attachments()}
       onRemoveAttachment={(id) => setAttachments((current) => current.filter((item) => item.id !== id))}
       connected={isConnected()}
+      accountName={activeAccountName()}
       username={activeAccount().username}
+      appVersion={props.appVersion}
       posting={posting()}
       status={""}
       modalOpen={dialog.stack.length > 0}

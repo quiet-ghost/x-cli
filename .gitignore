@@ -3,6 +3,8 @@ node_modules/
 .DS_Store
 .env
 .env.*
+.dev.vars
+.dev.vars*
 
 dist/
 coverage/

@@ -39,6 +39,7 @@ function ToastView(props: { current: ToastInput | null }) {
   const { current } = useTheme()
   const dimensions = useTerminalDimensions()
   const theme = () => current().colors
+  const railColor = (variant: ToastInput["variant"]) => variantColor(theme(), variant)
 
   return (
     <Show when={props.current}>
@@ -48,13 +49,13 @@ function ToastView(props: { current: ToastInput | null }) {
           top={2}
           right={2}
           zIndex={3200}
-          width={Math.min(44, dimensions().width - 4)}
-          paddingRight={1}
-          backgroundColor={theme().panel}
+          width={Math.max(1, Math.min(60, dimensions().width - 6))}
+          backgroundColor={theme().panelMuted}
+          border={["left", "right"]}
+          borderColor={railColor(toast().variant)}
         >
-          <box flexDirection="row" gap={1} paddingLeft={1}>
-            <text fg={variantColor(theme(), toast().variant)}>•</text>
-            <box>
+          <box width="100%" paddingLeft={1} paddingRight={1} paddingTop={1} paddingBottom={1}>
+            <box gap={0} width="100%">
               <Show when={toast().title}>
                 <text fg={theme().text}>{toast().title}</text>
               </Show>
