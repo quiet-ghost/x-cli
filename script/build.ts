@@ -29,7 +29,6 @@ const allTargets: Target[] = [
   { platform: "darwin", os: "darwin", arch: "x64" },
   { platform: "darwin", os: "darwin", arch: "arm64" },
   { platform: "windows", os: "win32", arch: "x64" },
-  { platform: "windows", os: "win32", arch: "arm64" },
 ]
 
 const targets = single
