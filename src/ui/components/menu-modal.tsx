@@ -1,5 +1,6 @@
+import type { ScrollBoxRenderable } from "@opentui/core"
 import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
-import { createSignal, For, onCleanup } from "solid-js"
+import { createEffect, createSignal, For, onCleanup } from "solid-js"
 import { useTheme } from "../../theme/context"
 import { ModalFrame } from "./modal-frame"
 
@@ -21,6 +22,7 @@ export function MenuModal(props: {
   const theme = () => current().colors
   const [selected, setSelected] = createSignal(0)
   const listHeight = () => Math.max(4, Math.floor(dimensions().height / 2) - 4)
+  let list: ScrollBoxRenderable | undefined
 
   const move = (next: number) => {
     if (props.items.length === 0) return
@@ -44,17 +46,29 @@ export function MenuModal(props: {
     }
   })
 
+  createEffect(() => {
+    if (props.items.length === 0 || !list || list.isDestroyed) return
+    list.scrollChildIntoView(menuRowId(selected()))
+  })
+
   onCleanup(() => {
     props.onClose?.()
   })
 
   return (
     <ModalFrame title={props.title} subtitle={props.subtitle}>
-      <scrollbox scrollY maxHeight={listHeight()}>
+      <scrollbox
+        ref={(value: ScrollBoxRenderable) => {
+          list = value
+        }}
+        scrollY
+        maxHeight={listHeight()}
+      >
         <box gap={1}>
           <For each={props.items}>
             {(item, index) => (
               <box
+                id={menuRowId(index())}
                 paddingLeft={1}
                 paddingRight={1}
                 paddingTop={1}
@@ -81,4 +95,8 @@ export function MenuModal(props: {
       </scrollbox>
     </ModalFrame>
   )
+}
+
+function menuRowId(index: number): string {
+  return `menu-item-${index}`
 }

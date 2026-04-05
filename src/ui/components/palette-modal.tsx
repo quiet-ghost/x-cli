@@ -1,6 +1,6 @@
-import type { InputRenderable } from "@opentui/core"
+import type { InputRenderable, ScrollBoxRenderable } from "@opentui/core"
 import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
-import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js"
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js"
 import { useDialog } from "../dialog"
 import { useTheme } from "../../theme/context"
 
@@ -27,6 +27,7 @@ export function PaletteModal(props: {
   const [filter, setFilter] = createSignal("")
 
   let input: InputRenderable | undefined
+  let results: ScrollBoxRenderable | undefined
 
   const filtered = createMemo(() => {
     const query = filter().trim().toLowerCase()
@@ -84,6 +85,12 @@ export function PaletteModal(props: {
     }
   })
 
+  createEffect(() => {
+    const item = filtered()[selected()]
+    if (!item || !results || results.isDestroyed) return
+    results.scrollChildIntoView(paletteRowId(item.id))
+  })
+
   onMount(() => {
     setTimeout(() => {
       if (!input || input.isDestroyed) return
@@ -122,7 +129,14 @@ export function PaletteModal(props: {
         }}
       />
       <Show when={filtered().length > 0} fallback={<text fg={theme().textMuted}>No results</text>}>
-        <scrollbox scrollY maxHeight={resultsHeight()} paddingRight={1}>
+        <scrollbox
+          ref={(value: ScrollBoxRenderable) => {
+            results = value
+          }}
+          scrollY
+          maxHeight={resultsHeight()}
+          paddingRight={1}
+        >
           <box gap={0}>
             <For each={grouped()}>
               {([category, items]) => (
@@ -137,6 +151,7 @@ export function PaletteModal(props: {
                       const active = () => filtered()[selected()]?.id === item.id
                       return (
                         <box
+                          id={paletteRowId(item.id)}
                           width="100%"
                           backgroundColor={active() ? theme().primary : theme().panel}
                           paddingLeft={1}
@@ -165,6 +180,10 @@ export function PaletteModal(props: {
       </Show>
     </box>
   )
+}
+
+function paletteRowId(id: string): string {
+  return `palette-item-${encodeURIComponent(id)}`
 }
 
 function selectedText(color: string): string {
