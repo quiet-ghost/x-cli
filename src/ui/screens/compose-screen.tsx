@@ -4,6 +4,7 @@ import { createEffect, onMount, Show } from "solid-js"
 import type { Attachment } from "../../domain/attachment"
 import { useTheme } from "../../theme/context"
 import { AttachmentList } from "../components/attachment-list"
+import { StatusBar } from "../components/status-bar"
 
 export function ComposeScreen(props: {
   content: string
@@ -12,7 +13,9 @@ export function ComposeScreen(props: {
   attachments: Attachment[]
   onRemoveAttachment: (id: string) => void
   connected: boolean
+  accountName: string
   username?: string
+  appVersion: string
   posting: boolean
   status: string
   modalOpen: boolean
@@ -110,15 +113,8 @@ export function ComposeScreen(props: {
         <AttachmentList attachments={props.attachments} onRemove={props.onRemoveAttachment} />
       </box>
       <box flexGrow={1} />
-      <box width="100%" paddingLeft={2} paddingRight={2} paddingBottom={1}>
-        <box flexDirection="row" justifyContent="flex-end">
-          <Show
-            when={props.connected && props.username}
-            fallback={<text fg={props.connected ? theme().textMuted : theme().warning}>{props.connected ? "" : "connect"}</text>}
-          >
-            <text fg={theme().textMuted}>@{props.username}</text>
-          </Show>
-        </box>
+      <box width="100%" paddingLeft={containerPadding()} paddingRight={containerPadding()} paddingBottom={1}>
+        <StatusBar accountName={props.accountName} username={props.username} version={props.appVersion} connected={props.connected} />
       </box>
     </box>
   )

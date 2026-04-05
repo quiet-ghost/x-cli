@@ -6,7 +6,7 @@ import { Root } from "./app"
 
 declare const XCLI_VERSION: string | undefined
 
-const appVersion = typeof XCLI_VERSION === "string" ? XCLI_VERSION : pkg.version
+export const appVersion = typeof XCLI_VERSION === "string" ? XCLI_VERSION : pkg.version
 
 const args = process.argv.slice(2)
 
@@ -22,7 +22,7 @@ if (args.includes("--help") || args.includes("-h")) {
 
 const configStore = await ConfigStore.open()
 
-await render(() => <Root configStore={configStore} />, {
+await render(() => <Root configStore={configStore} appVersion={appVersion} />, {
   targetFps: 30,
   exitOnCtrlC: false,
   consoleOptions: {

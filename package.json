@@ -10,7 +10,7 @@
     "url": "https://github.com/quietghost/x-cli"
   },
   "scripts": {
-    "dev": "bun --preload @opentui/solid/preload src/index.tsx",
+    "dev": "XCLI_VERSION=dev bun --preload @opentui/solid/preload src/index.tsx",
     "start": "bun --preload @opentui/solid/preload src/index.tsx",
     "build:release": "bun run script/build.ts",
     "build:single": "bun run script/build.ts --single",
