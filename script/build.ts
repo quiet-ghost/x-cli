@@ -15,6 +15,7 @@ const themeDir = path.join(root, "src", "theme", "opencode-builtins")
 const version = process.env["XCLI_VERSION"] || pkg.version
 const single = process.argv.includes("--single")
 const plugin = createSolidTransformPlugin()
+const skipInstall = process.argv.includes("--skip-install")
 
 type Target = {
   platform: "linux" | "darwin" | "windows"
@@ -37,6 +38,10 @@ const targets = single
 
 await $`rm -rf ${distDir}`
 await fs.mkdir(assetsDir, { recursive: true })
+
+if (!skipInstall) {
+  await $`bun install --os="*" --cpu="*" @opentui/core@${pkg.dependencies["@opentui/core"]}`.cwd(root)
+}
 
 for (const target of targets) {
   const slug = `x-cli-${target.platform}-${target.arch}`
