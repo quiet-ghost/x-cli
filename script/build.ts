@@ -11,7 +11,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(__dirname, "..")
 const distDir = path.join(root, "dist")
 const assetsDir = path.join(distDir, "assets")
-const themeDir = path.join(root, "src", "theme", "opencode-builtins")
 const version = process.env["XCLI_VERSION"] || pkg.version
 const single = process.argv.includes("--single")
 const plugin = createSolidTransformPlugin()
@@ -47,7 +46,6 @@ for (const target of targets) {
   const packageName = `@quietghost/${slug}`
   const packageDir = path.join(distDir, slug)
   const binDir = path.join(packageDir, "bin")
-  const themesTargetDir = path.join(packageDir, "themes")
 
   await fs.mkdir(binDir, { recursive: true })
 
@@ -69,7 +67,6 @@ for (const target of targets) {
     },
   })
 
-  await fs.cp(themeDir, themesTargetDir, { recursive: true })
   await fs.writeFile(
     path.join(packageDir, "package.json"),
     JSON.stringify(

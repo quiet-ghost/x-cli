@@ -46,16 +46,12 @@ try {
 
 async function cacheFromDirectory(packageDir) {
   const sourceBinary = path.join(packageDir, "bin", binaryName)
-  const sourceThemes = path.join(packageDir, "themes")
   const targetBinary = path.join(__dirname, "bin", ".x-cli")
-  const targetThemes = path.join(__dirname, "themes")
 
   await fsp.mkdir(path.dirname(targetBinary), { recursive: true })
   await fsp.rm(targetBinary, { force: true }).catch(() => {})
-  await fsp.rm(targetThemes, { recursive: true, force: true }).catch(() => {})
   await fsp.copyFile(sourceBinary, targetBinary)
   await fsp.chmod(targetBinary, 0o755).catch(() => {})
-  await fsp.cp(sourceThemes, targetThemes, { recursive: true })
 }
 
 async function downloadAndCacheFromRegistry(name) {
