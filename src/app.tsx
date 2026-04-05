@@ -11,6 +11,7 @@ import { ConfigStore } from "./lib/config"
 import { DraftStore } from "./lib/drafts"
 import { errorMessage } from "./lib/errors"
 import { pickMediaFiles } from "./lib/file-picker"
+import { syncPackageUpdateState, updateCheckIntervalMs, updateInstallCommand } from "./lib/update"
 import { XClient } from "./lib/x-api"
 import { ThemeProvider, useTheme } from "./theme/context"
 import { DialogProvider, useDialog } from "./ui/dialog"
@@ -54,6 +55,7 @@ function App(props: { configStore: ConfigStore; appVersion: string }) {
 
   let textarea: TextareaRenderable | undefined
   let scratchTimer: ReturnType<typeof setTimeout> | undefined
+  let updateTimer: ReturnType<typeof setInterval> | undefined
 
   const setComposerValue = (value: string) => {
     textarea?.setText(value)
@@ -73,6 +75,44 @@ function App(props: { configStore: ConfigStore; appVersion: string }) {
       return
     }
     renderer.destroy()
+  }
+
+  const notifyPackageStatus = async () => {
+    let notification
+
+    try {
+      notification = await syncPackageUpdateState(props.appVersion)
+    } catch {
+      return
+    }
+
+    if (notification.updatedFrom && notification.availableVersion) {
+      toast.show({
+        variant: "info",
+        title: `Updated to v${props.appVersion}`,
+        message: `Updated from v${notification.updatedFrom}. v${notification.availableVersion} is already available. Run ${updateInstallCommand()}.`,
+        duration: 6500,
+      })
+      return
+    }
+
+    if (notification.updatedFrom) {
+      toast.show({
+        variant: "success",
+        title: "x-cli updated",
+        message: `Updated from v${notification.updatedFrom} to v${props.appVersion}.`,
+      })
+      return
+    }
+
+    if (!notification.availableVersion) return
+
+    toast.show({
+      variant: "info",
+      title: "Update available",
+      message: `v${notification.availableVersion} is available. Run ${updateInstallCommand()}.`,
+      duration: 6500,
+    })
   }
 
   const loadScratch = async (accountName: string) => {
@@ -383,6 +423,10 @@ function App(props: { configStore: ConfigStore; appVersion: string }) {
 
   onMount(() => {
     void loadScratch(activeAccountName())
+    void notifyPackageStatus()
+    updateTimer = setInterval(() => {
+      void notifyPackageStatus()
+    }, updateCheckIntervalMs)
     if (!isConnected()) return
     void client.validateSession().then((next) => setConfig(next)).catch(() => {})
   })
@@ -405,6 +449,7 @@ function App(props: { configStore: ConfigStore; appVersion: string }) {
 
   onCleanup(() => {
     if (scratchTimer) clearTimeout(scratchTimer)
+    if (updateTimer) clearInterval(updateTimer)
   })
 
   useKeyboard((event) => {
