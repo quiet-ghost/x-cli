@@ -40,8 +40,8 @@ await fs.copyFile(path.join(root, "README.md"), path.join(wrapperDir, "README.md
 await fs.writeFile(
   path.join(wrapperDir, "package.json"),
   JSON.stringify(
-    {
-      name: "@quietghost/x-cli",
+      {
+        name: "@quietghost/x-cli",
       version,
       license: pkg.license,
       description: "Post to X from the terminal with Bun and OpenTUI.",
