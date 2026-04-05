@@ -137,13 +137,27 @@ export async function shouldCheckForUpdates(packageRoot, intervalMs) {
 export async function acquireUpdateLock(packageRoot) {
   const lockFile = updateLockPath(packageRoot)
 
-  try {
+  const tryOpen = async () => {
     const handle = await fsp.open(lockFile, "wx")
+    await handle.writeFile(`${Date.now()}\n`)
     return async () => {
       await handle.close().catch(() => {})
       await fsp.rm(lockFile, { force: true }).catch(() => {})
     }
+  }
+
+  try {
+    return await tryOpen()
   } catch {
+    try {
+      const stat = await fsp.stat(lockFile)
+      if (Date.now() - stat.mtimeMs > 10 * 60 * 1000) {
+        await fsp.rm(lockFile, { force: true }).catch(() => {})
+        return await tryOpen()
+      }
+    } catch {
+    }
+
     return null
   }
 }

@@ -49,7 +49,7 @@ function ToastView(props: { current: ToastInput | null }) {
           top={2}
           right={2}
           zIndex={3200}
-          width={Math.min(60, Math.max(24, dimensions().width - 6))}
+          width={Math.max(1, Math.min(60, dimensions().width - 6))}
           backgroundColor={theme().panelMuted}
           border={["left", "right"]}
           borderColor={railColor(toast().variant)}

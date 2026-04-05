@@ -32,7 +32,7 @@ export function ComposeScreen(props: {
   const compact = () => dimensions().width < 80
   const narrow = () => dimensions().width < 68
   const containerPadding = () => (compact() ? 1 : 2)
-  const contentWidth = () => Math.max(24, Math.min(104, dimensions().width - containerPadding() * 2))
+  const contentWidth = () => Math.max(1, Math.min(104, dimensions().width - containerPadding() * 2))
   const composerMinHeight = () => (dimensions().height < 22 ? 6 : 8)
   const composerMaxHeight = () => Math.max(composerMinHeight(), Math.min(14, dimensions().height - 10))
 
