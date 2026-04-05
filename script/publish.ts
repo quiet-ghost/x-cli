@@ -35,6 +35,8 @@ await $`rm -rf ${wrapperDir}`
 await fs.mkdir(path.join(wrapperDir, "bin"), { recursive: true })
 await fs.copyFile(path.join(root, "bin", "x-cli"), path.join(wrapperDir, "bin", "x-cli"))
 await fs.copyFile(path.join(root, "script", "postinstall.mjs"), path.join(wrapperDir, "postinstall.mjs"))
+await fs.copyFile(path.join(root, "script", "platform-package.mjs"), path.join(wrapperDir, "platform-package.mjs"))
+await fs.copyFile(path.join(root, "script", "update.mjs"), path.join(wrapperDir, "update.mjs"))
 await fs.copyFile(path.join(root, "README.md"), path.join(wrapperDir, "README.md"))
 
 await fs.writeFile(
