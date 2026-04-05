@@ -10,4 +10,5 @@ export const Paths = {
   configFile: path.join(configDir, "config.toml"),
   themesDir: path.join(configDir, "themes"),
   draftsDir: path.join(configDir, "drafts"),
+  updateStateFile: path.join(configDir, "update-state.json"),
 } as const
