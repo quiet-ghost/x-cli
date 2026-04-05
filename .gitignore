@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # Local config/runtime data
 .config/
+
+# Git worktrees
+.worktrees/
