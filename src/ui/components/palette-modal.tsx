@@ -123,7 +123,7 @@ export function PaletteModal(props: {
       />
       <Show when={filtered().length > 0} fallback={<text fg={theme().textMuted}>No results</text>}>
         <scrollbox scrollY maxHeight={resultsHeight()} paddingRight={1}>
-          <box gap={1}>
+          <box gap={0}>
             <For each={grouped()}>
               {([category, items]) => (
                 <box gap={0}>
@@ -141,8 +141,6 @@ export function PaletteModal(props: {
                           backgroundColor={active() ? theme().primary : theme().panel}
                           paddingLeft={1}
                           paddingRight={1}
-                          paddingTop={1}
-                          paddingBottom={1}
                           onMouseDown={() => {
                             const index = filtered().findIndex((entry) => entry.id === item.id)
                             if (index >= 0) moveTo(index)
