@@ -26,7 +26,12 @@ export function ComposeScreen(props: {
   const theme = () => current().colors
   let textarea: TextareaRenderable | undefined
 
-  const contentWidth = () => Math.min(104, Math.max(60, dimensions().width - 4))
+  const compact = () => dimensions().width < 80
+  const narrow = () => dimensions().width < 68
+  const containerPadding = () => (compact() ? 1 : 2)
+  const contentWidth = () => Math.max(24, Math.min(104, dimensions().width - containerPadding() * 2))
+  const composerMinHeight = () => (dimensions().height < 22 ? 6 : 8)
+  const composerMaxHeight = () => Math.max(composerMinHeight(), Math.min(14, dimensions().height - 10))
 
   onMount(() => {
     setTimeout(() => {
@@ -50,54 +55,59 @@ export function ComposeScreen(props: {
   return (
     <box width="100%" height="100%" backgroundColor={theme().background} alignItems="center">
       <box flexGrow={1} />
-      <box width={contentWidth()} backgroundColor={theme().panel} paddingLeft={2} paddingRight={2} paddingTop={1} paddingBottom={1} gap={1}>
-          <Show
-            when={!props.connected}
-            fallback={
-              undefined
-            }
-          >
-            <text fg={theme().warning}>Connect your X account from Settings before posting.</text>
-          </Show>
+      <box
+        width={contentWidth()}
+        backgroundColor={theme().panel}
+        paddingLeft={containerPadding()}
+        paddingRight={containerPadding()}
+        paddingTop={1}
+        paddingBottom={1}
+        gap={1}
+      >
+        <Show when={!props.connected} fallback={undefined}>
+          <text fg={theme().warning}>Connect your X account from Settings before posting.</text>
+        </Show>
 
-          <textarea
-            ref={(value: TextareaRenderable) => {
-              textarea = value
-              props.onReady(value)
-            }}
-            initialValue={props.content}
-            minHeight={8}
-            maxHeight={12}
-            textColor={props.posting ? theme().textMuted : theme().text}
-            focusedTextColor={props.posting ? theme().textMuted : theme().text}
-            placeholder="What's happening?"
-            placeholderColor={theme().textMuted}
-            focusedBackgroundColor={theme().panel}
-            cursorColor={theme().primary}
-            onContentChange={() => {
-              if (!textarea) return
-              props.onContentChange(textarea.plainText)
-            }}
-            onKeyDown={(event) => {
-              void props.onComposerKeyDown(event)
-              }}
-            />
+        <textarea
+          ref={(value: TextareaRenderable) => {
+            textarea = value
+            props.onReady(value)
+          }}
+          initialValue={props.content}
+          minHeight={composerMinHeight()}
+          maxHeight={composerMaxHeight()}
+          textColor={props.posting ? theme().textMuted : theme().text}
+          focusedTextColor={props.posting ? theme().textMuted : theme().text}
+          placeholder="What's happening?"
+          placeholderColor={theme().textMuted}
+          focusedBackgroundColor={theme().panel}
+          cursorColor={theme().primary}
+          onContentChange={() => {
+            if (!textarea) return
+            props.onContentChange(textarea.plainText)
+          }}
+          onKeyDown={(event) => {
+            void props.onComposerKeyDown(event)
+          }}
+        />
 
-          <box flexDirection="row" justifyContent="space-between">
-            <text wrapMode="none">
-              <span style={{ fg: theme().text }}>ctrl+v</span>
-              <span style={{ fg: theme().textMuted }}> paste </span>
-              <span style={{ fg: theme().text }}>ctrl+p</span>
-              <span style={{ fg: theme().textMuted }}> commands </span>
-              <span style={{ fg: theme().text }}>ctrl+d</span>
-              <span style={{ fg: theme().textMuted }}> post</span>
-            </text>
-            <text fg={props.countValid ? theme().textMuted : theme().warning}>
-              {props.weightedCount}/{props.maxCount}
-            </text>
-          </box>
+        <box flexDirection={narrow() ? "column" : "row"} justifyContent="space-between" gap={narrow() ? 0 : 1}>
+          <text wrapMode="word">
+            <span style={{ fg: theme().text }}>ctrl+v</span>
+            <span style={{ fg: theme().textMuted }}> paste </span>
+            <span style={{ fg: theme().text }}>ctrl+u</span>
+            <span style={{ fg: theme().textMuted }}> attach </span>
+            <span style={{ fg: theme().text }}>ctrl+p</span>
+            <span style={{ fg: theme().textMuted }}> commands </span>
+            <span style={{ fg: theme().text }}>ctrl+d</span>
+            <span style={{ fg: theme().textMuted }}> post</span>
+          </text>
+          <text fg={props.countValid ? theme().textMuted : theme().warning}>
+            {props.weightedCount}/{props.maxCount}
+          </text>
+        </box>
 
-          <AttachmentList attachments={props.attachments} onRemove={props.onRemoveAttachment} />
+        <AttachmentList attachments={props.attachments} onRemove={props.onRemoveAttachment} />
       </box>
       <box flexGrow={1} />
       <box width="100%" paddingLeft={2} paddingRight={2} paddingBottom={1}>

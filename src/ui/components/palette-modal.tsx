@@ -1,5 +1,5 @@
 import type { InputRenderable } from "@opentui/core"
-import { useKeyboard } from "@opentui/solid"
+import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
 import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js"
 import { useDialog } from "../dialog"
 import { useTheme } from "../../theme/context"
@@ -20,6 +20,7 @@ export function PaletteModal(props: {
   onClose?: () => void
 }) {
   const dialog = useDialog()
+  const dimensions = useTerminalDimensions()
   const { current } = useTheme()
   const theme = () => current().colors
   const [selected, setSelected] = createSignal(0)
@@ -45,6 +46,8 @@ export function PaletteModal(props: {
     }
     return [...map.entries()]
   })
+
+  const resultsHeight = () => Math.max(4, Math.floor(dimensions().height / 2) - 4)
 
   const moveTo = (index: number) => {
     const items = filtered()
@@ -95,7 +98,7 @@ export function PaletteModal(props: {
   })
 
   return (
-    <box paddingLeft={4} paddingRight={4} paddingTop={2} paddingBottom={2} gap={1}>
+    <box paddingLeft={2} paddingRight={2} paddingTop={1} paddingBottom={1} gap={1} width="100%">
       <box flexDirection="row" justifyContent="space-between">
         <text fg={theme().text}>{props.title}</text>
         <text fg={theme().textMuted} onMouseUp={() => dialog.clear()}>
@@ -119,43 +122,48 @@ export function PaletteModal(props: {
         }}
       />
       <Show when={filtered().length > 0} fallback={<text fg={theme().textMuted}>No results</text>}>
-        <box gap={1}>
-          <For each={grouped()}>
-            {([category, items]) => (
-              <box gap={0}>
-                <Show when={category}>
-                  <box paddingTop={1}>
-                    <text fg={theme().accent}>{category}</text>
-                  </box>
-                </Show>
-                <For each={items}>
-                  {(item) => {
-                    const active = () => filtered()[selected()]?.id === item.id
-                    return (
-                      <box
-                        backgroundColor={active() ? theme().primary : theme().panel}
-                        paddingLeft={1}
-                        paddingRight={1}
-                        onMouseDown={() => {
-                          const index = filtered().findIndex((entry) => entry.id === item.id)
-                          if (index >= 0) moveTo(index)
-                        }}
-                        onMouseUp={() => activate()}
-                      >
-                        <box flexDirection="row" justifyContent="space-between" gap={2}>
-                          <text fg={active() ? selectedText(theme().primary) : theme().text}>{item.title}</text>
-                          <Show when={item.description}>
-                            <text fg={active() ? selectedText(theme().primary) : theme().textMuted}>{item.description}</text>
-                          </Show>
+        <scrollbox scrollY maxHeight={resultsHeight()} paddingRight={1}>
+          <box gap={1}>
+            <For each={grouped()}>
+              {([category, items]) => (
+                <box gap={0}>
+                  <Show when={category}>
+                    <box paddingTop={1}>
+                      <text fg={theme().accent}>{category}</text>
+                    </box>
+                  </Show>
+                  <For each={items}>
+                    {(item) => {
+                      const active = () => filtered()[selected()]?.id === item.id
+                      return (
+                        <box
+                          width="100%"
+                          backgroundColor={active() ? theme().primary : theme().panel}
+                          paddingLeft={1}
+                          paddingRight={1}
+                          paddingTop={1}
+                          paddingBottom={1}
+                          onMouseDown={() => {
+                            const index = filtered().findIndex((entry) => entry.id === item.id)
+                            if (index >= 0) moveTo(index)
+                          }}
+                          onMouseUp={() => activate()}
+                        >
+                          <box flexDirection="row" justifyContent="space-between" gap={2}>
+                            <text fg={active() ? selectedText(theme().primary) : theme().text}>{item.title}</text>
+                            <Show when={item.description}>
+                              <text fg={active() ? selectedText(theme().primary) : theme().textMuted}>{item.description}</text>
+                            </Show>
+                          </box>
                         </box>
-                      </box>
-                    )
-                  }}
-                </For>
-              </box>
-            )}
-          </For>
-        </box>
+                      )
+                    }}
+                  </For>
+                </box>
+              )}
+            </For>
+          </box>
+        </scrollbox>
       </Show>
     </box>
   )
