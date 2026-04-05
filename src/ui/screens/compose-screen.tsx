@@ -34,6 +34,7 @@ export function ComposeScreen(props: {
   const contentWidth = () => Math.max(1, Math.min(104, dimensions().width - containerPadding() * 2))
   const composerMinHeight = () => (dimensions().height < 22 ? 6 : 8)
   const composerMaxHeight = () => Math.max(composerMinHeight(), Math.min(14, dimensions().height - 10))
+  const accountLabel = () => (props.username ? `@${props.username}` : props.accountName)
   const versionLabel = () => (props.appVersion === "dev" ? "dev" : `v${props.appVersion}`)
 
   onMount(() => {
@@ -115,7 +116,7 @@ export function ComposeScreen(props: {
       <box flexGrow={1} />
       <box width="100%" paddingLeft={containerPadding()} paddingRight={containerPadding()} paddingBottom={1}>
         <box width="100%" flexDirection="row" justifyContent="space-between">
-          <text fg={theme().textMuted}>{props.accountName}</text>
+          <text fg={theme().textMuted}>{accountLabel()}</text>
           <text fg={theme().textMuted}>{versionLabel()}</text>
         </box>
       </box>

@@ -6,7 +6,8 @@ import { Root } from "./app"
 
 declare const XCLI_VERSION: string | undefined
 
-export const appVersion = typeof XCLI_VERSION === "string" ? XCLI_VERSION : pkg.version
+const runtimeVersion = process.env["XCLI_VERSION"]
+export const appVersion = typeof runtimeVersion === "string" ? runtimeVersion : typeof XCLI_VERSION === "string" ? XCLI_VERSION : pkg.version
 
 const args = process.argv.slice(2)
 
