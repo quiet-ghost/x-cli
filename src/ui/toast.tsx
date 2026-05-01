@@ -1,45 +1,48 @@
-import { createContext, Show, useContext, type ParentProps } from "solid-js"
-import { createStore } from "solid-js/store"
-import { useTerminalDimensions } from "@opentui/solid"
-import type { AppTheme } from "../domain/theme"
-import { useTheme } from "../theme/context"
+import { createContext, Show, useContext, type ParentProps } from "solid-js";
+import { createStore } from "solid-js/store";
+import { useTerminalDimensions } from "@opentui/solid";
+import type { AppTheme } from "../domain/theme";
+import { useTheme } from "../theme/context";
 
 export type ToastInput = {
-  variant: "info" | "success" | "warning" | "error"
-  title?: string
-  message: string
-  duration?: number
-}
+  variant: "info" | "success" | "warning" | "error";
+  title?: string;
+  message: string;
+  duration?: number;
+};
 
 type ToastContextValue = {
-  show: (input: ToastInput) => void
-}
+  show: (input: ToastInput) => void;
+};
 
-const ToastContext = createContext<ToastContextValue>()
+const ToastContext = createContext<ToastContextValue>();
 
 export function ToastProvider(props: ParentProps) {
-  const [store, setStore] = createStore<{ current: ToastInput | null }>({ current: null })
-  let timer: ReturnType<typeof setTimeout> | undefined
+  const [store, setStore] = createStore<{ current: ToastInput | null }>({
+    current: null,
+  });
+  let timer: ReturnType<typeof setTimeout> | undefined;
 
   const show = (input: ToastInput) => {
-    if (timer) clearTimeout(timer)
-    setStore("current", input)
-    timer = setTimeout(() => setStore("current", null), input.duration ?? 3500)
-  }
+    if (timer) clearTimeout(timer);
+    setStore("current", input);
+    timer = setTimeout(() => setStore("current", null), input.duration ?? 3500);
+  };
 
   return (
     <ToastContext.Provider value={{ show }}>
       {props.children}
       <ToastView current={store.current} />
     </ToastContext.Provider>
-  )
+  );
 }
 
 function ToastView(props: { current: ToastInput | null }) {
-  const { current } = useTheme()
-  const dimensions = useTerminalDimensions()
-  const theme = () => current().colors
-  const railColor = (variant: ToastInput["variant"]) => variantColor(theme(), variant)
+  const { current } = useTheme();
+  const dimensions = useTerminalDimensions();
+  const theme = () => current().colors;
+  const railColor = (variant: ToastInput["variant"]) =>
+    variantColor(theme(), variant);
 
   return (
     <Show when={props.current}>
@@ -54,7 +57,13 @@ function ToastView(props: { current: ToastInput | null }) {
           border={["left", "right"]}
           borderColor={railColor(toast().variant)}
         >
-          <box width="100%" paddingLeft={1} paddingRight={1} paddingTop={1} paddingBottom={1}>
+          <box
+            width="100%"
+            paddingLeft={1}
+            paddingRight={1}
+            paddingTop={1}
+            paddingBottom={1}
+          >
             <box gap={0} width="100%">
               <Show when={toast().title}>
                 <text fg={theme().text}>{toast().title}</text>
@@ -67,18 +76,21 @@ function ToastView(props: { current: ToastInput | null }) {
         </box>
       )}
     </Show>
-  )
+  );
 }
 
 export function useToast(): ToastContextValue {
-  const value = useContext(ToastContext)
-  if (!value) throw new Error("useToast must be used within ToastProvider")
-  return value
+  const value = useContext(ToastContext);
+  if (!value) throw new Error("useToast must be used within ToastProvider");
+  return value;
 }
 
-function variantColor(colors: AppTheme["colors"], variant: ToastInput["variant"]): string {
-  if (variant === "success") return colors.success
-  if (variant === "warning") return colors.warning
-  if (variant === "error") return colors.error
-  return colors.primary
+function variantColor(
+  colors: AppTheme["colors"],
+  variant: ToastInput["variant"],
+): string {
+  if (variant === "success") return colors.success;
+  if (variant === "warning") return colors.warning;
+  if (variant === "error") return colors.error;
+  return colors.primary;
 }
