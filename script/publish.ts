@@ -51,7 +51,7 @@ await fs.writeFile(
         "x-cli": "./bin/x-cli",
       },
       scripts: {
-        postinstall: "node ./postinstall.mjs",
+        postinstall: "bun ./postinstall.mjs || node ./postinstall.mjs",
       },
       optionalDependencies,
       publishConfig: {
